@@ -12,9 +12,21 @@
 
 function patchElem(elem)
 {
-  // format: "Apr 10, 2023 @ 1:53pm"
-  const parsableString = elem.innerHTML.trim() + " America/Los_Angeles"
-  const time = luxon.DateTime.fromFormat(parsableString, "MMM d, yyyy @ h:mma z");
+  // format: "10 Apr, 2023 @ 1:53pm" OR "10 Apr @ 1:53pm"
+  const orig = elem.innerHTML.trim();
+
+  const split = orig.split("@")
+  for (let i = 0; i < split.length; i++)
+    split[i] = split[i].trim();
+
+  if (!split[0].includes(","))
+    split[0] = split[0] + ", " + luxon.DateTime.now().setZone("America/Los_Angeles").year
+
+  const parsableString = split.join(" ") + " America/Los_Angeles";
+  const time = luxon.DateTime.fromFormat(parsableString, "d MMM, yyyy h:mma z");
+
+  if (time.invalid)
+    throw time.invalid;
 
   const localTime = time.toFormat("d MMM, yyyy @ ") + time.toFormat("h:mma ").toLowerCase();
   elem.innerHTML = '<font style="color:green">' + localTime + '</font>';
