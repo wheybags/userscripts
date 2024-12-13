@@ -71,3 +71,15 @@ setInterval(()=>
     activate();
 }, 500)
 
+
+window.addEventListener('wheel', (event) =>
+{
+  if (event.deltaY < 0 && following)
+    stopFollowing();
+})
+
+window.addEventListener('keydown', (event) =>
+{
+  if ((event.key === 'PageUp' || event.key === 'Home') && following)
+    stopFollowing();
+})
